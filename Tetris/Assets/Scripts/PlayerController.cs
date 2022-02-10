@@ -54,6 +54,6 @@ public class PlayerController : MonoBehaviour
     }
     private void TurnKey(InputAction.CallbackContext obj)
     {
-
+        _map.Turn(variables._one);
     }
 }
