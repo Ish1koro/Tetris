@@ -136,7 +136,7 @@ public class Map : MonoBehaviour
                 _stage[_generate_Position_X + _variables._one, _generate_Position_Y - _variables._one] = _variables._now_Mino;
                 break;
 
-            // Zmino
+            // Zminoの場合
             //  33
             // 33
             case (int)_mino_Type.Zmino:
@@ -146,7 +146,7 @@ public class Map : MonoBehaviour
                 _stage[_generate_Position_X + _variables._one, _generate_Position_Y - _variables._one] = _variables._now_Mino;
                 break;
 
-            // Smino
+            // Sminoの場合
             // 33
             //  33
             case (int)_mino_Type.Smino:
@@ -159,13 +159,13 @@ public class Map : MonoBehaviour
     }
 
     /// <summary>
-    /// Fall
+    /// 時間経過で落ちる
     /// </summary>
     public void Fall()
     {
-        for (int y = 0; y < _variables._stage_Y_Length; y++)
+        for (int y = 0; y < _stage.GetLength(_variables._zero); y++)
         {
-            for (int x = 0; x < _variables._stage_X_Length; x++)
+            for (int x = 0; x < _stage.GetLength(_variables._one); x++)
             {
                 if (_stage[y, x] == _variables._now_Mino && _stage[y - _variables._one, x] != _variables._cant_Move_Area)
                 {
@@ -179,10 +179,53 @@ public class Map : MonoBehaviour
     /// <summary>
     /// 配列の移動。入力値を引数でもらってくる
     /// </summary>
-    /// <param name="Input">i移動の入力値</param>
+    /// <param name="Input">移動の入力値</param>
     public void Move(Vector2 Input)
     {
+        // 入力値のyが0より大きかったら0にする
+        if (Input.y > _variables._zero)
+        {
+            Input.y = _variables._zero;
+        }
 
+        /*
+        for (int y = 0; y < _variables._stage_Y_Length; y++)
+        {
+            for (int x = 0; x < _variables._stage_X_Length; x++)
+            {
+                if (_stage[y, x] == _variables._now_Mino && _stage[y + (int)Input.y, x + (int)Input.x] != _variables._cant_Move_Area)
+                {
+                    switch (_generate_Mino)
+                    {
+                        case (int)_mino_Type.Tmino:
+                            _stage[_generate_Position_X, _generate_Position_Y] = _variables._now_Mino;
+                            _stage[_generate_Position_X - _variables._one, _generate_Position_Y - _variables._one] = _variables._now_Mino;
+                            _stage[_generate_Position_X, _generate_Position_Y - _variables._one] = _variables._now_Mino;
+                            _stage[_generate_Position_X + _variables._one, _generate_Position_Y - _variables._one] = _variables._now_Mino;
+                            break;
+
+                        case (int)_mino_Type.Imino:
+                            break;
+
+                        case (int)_mino_Type.Omino:
+                            break;
+
+                        case (int)_mino_Type.Jmino:
+                            break;
+
+                        case (int)_mino_Type.Lmino:
+                            break;
+
+                        case (int)_mino_Type.Zmino:
+                            break;
+
+                        case (int)_mino_Type.Smino:
+                            break;
+                    }
+                }
+            }
+        }
+        */
     }
 
     /// <summary>

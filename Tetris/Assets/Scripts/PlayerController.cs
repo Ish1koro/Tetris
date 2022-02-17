@@ -8,22 +8,33 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     #region 他スクリプト参照
-    // Playerの入力を取得
+    /// <summary>
+    /// Playerの入力を取得
+    /// </summary>
     private PlayerInput _playerinput = default;
 
-    // 配列クラス
+    /// <summary>
+    /// 配列クラス
+    /// </summary>
     private Map _map = default;
 
-    // よく使う変数などを定義したクラス
+    /// <summary>
+    /// よく使う変数などを定義したクラス
+    /// </summary>
     private Variables _variables = default;
     #endregion
 
     #region Vector
-    // Playerの移動の入力値
+    /// <summary>
+    /// Playerの移動の入力値
+    /// </summary>
     private Vector2 _player_Input_Vector = default;
     #endregion
 
     #region int
+    /// <summary>
+    /// 回転の向き
+    /// </summary>
     private int _turn_Direction = default;
     #endregion
 
