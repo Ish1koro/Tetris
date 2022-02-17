@@ -103,7 +103,7 @@
                     "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Keyboard",
                     "action": "TurnKey",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -111,7 +111,7 @@
                 {
                     "name": "GamePad",
                     "id": "e4153a40-effd-4c95-8ca8-90b5a03635c7",
-                    "path": "1DAxis",
+                    "path": "1DAxis(minValue=2,whichSideWins=2)",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -120,23 +120,23 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "negative",
-                    "id": "e9754190-4c67-4fe6-b469-174134b5145e",
-                    "path": "<Gamepad>/leftShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "TurnPad",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
                     "name": "positive",
                     "id": "257d5a5a-c801-4f6c-b6ac-31dacaef14eb",
                     "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Keyboard",
+                    "action": "TurnPad",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "negative",
+                    "id": "e9754190-4c67-4fe6-b469-174134b5145e",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
                     "action": "TurnPad",
                     "isComposite": false,
                     "isPartOfComposite": true

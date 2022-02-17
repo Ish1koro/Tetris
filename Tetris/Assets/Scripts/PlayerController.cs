@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     private Map _map = default;
 
     // よく使う変数などを定義したクラス
-    private Variables variables = default;
+    private Variables _variables = default;
     #endregion
 
     #region Vector
@@ -31,20 +31,22 @@ public class PlayerController : MonoBehaviour
     {
         _playerinput = GetComponent<PlayerInput>();
         _map = GetComponent<Map>();
-        variables = new Variables();
+        _variables = new Variables();
     }
 
     private void OnEnable()
     {
-        _playerinput.actions[variables._move].performed += Move;
-        _playerinput.actions[variables._turn_Key].started += TurnKey;
+        _playerinput.actions[_variables._move].performed += Move;
+        _playerinput.actions[_variables._turn_Key].started += TurnKey;
+        _playerinput.actions[_variables._turn_Pad].performed += TurnPad;
     }
 
 
     private void OnDisable()
     {
-        _playerinput.actions[variables._move].performed -= Move;
-        _playerinput.actions[variables._turn_Key].started -= TurnKey;
+        _playerinput.actions[_variables._move].performed -= Move;
+        _playerinput.actions[_variables._turn_Key].started -= TurnKey;
+        _playerinput.actions[_variables._turn_Pad].performed -= TurnPad;
     }
 
     private void Move(InputAction.CallbackContext obj)
@@ -54,6 +56,10 @@ public class PlayerController : MonoBehaviour
     }
     private void TurnKey(InputAction.CallbackContext obj)
     {
-        _map.Turn(variables._one);
+        _map.Turn(_variables._one);
+    }
+    private void TurnPad(InputAction.CallbackContext obj)
+    {
+        _map.Turn(obj.ReadValue<int>());
     }
 }
