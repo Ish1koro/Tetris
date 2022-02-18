@@ -68,6 +68,7 @@
     <Compile Include="Assets\Scripts\ViewController.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Variables.cs" />
+    <Compile Include="Assets\Scripts\AI.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/Users/いしころ/デスクトップ/Tetris/Tetris/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

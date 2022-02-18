@@ -11,8 +11,8 @@ public class ViewController : MonoBehaviour
         _map = GetComponent<Map>();
     }
 
-    public void Move()
+    public void Move( Vector2 Position)
     {
-        
+        transform.position = Position;
     }
 }

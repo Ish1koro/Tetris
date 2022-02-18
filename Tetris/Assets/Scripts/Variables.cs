@@ -35,6 +35,7 @@ public class Variables : MonoBehaviour
     public int _wall { get; } = 1;
     public int _old_Mino { get; } = 2;
     public int _now_Mino { get; } = 3;
-    public int _can_Fall_Position { get; } = 4;
+    public int _mino_Center { get; } = 4;
+    public int _can_Fall_Position { get; } = 5;
     #endregion
 }
