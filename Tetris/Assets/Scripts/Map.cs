@@ -6,10 +6,6 @@ using UnityEngine;
 public class Map : MonoBehaviour
 {
     #region 他スクリプト参照
-    /// <summary>
-    /// よく使う変数などを定義したクラス
-    /// </summary>
-    protected Variables _variables = new Variables();
 
     /// <summary>
     /// 見た目を配列に同期する
@@ -47,17 +43,26 @@ public class Map : MonoBehaviour
     };
 
     /// <summary>
-    /// Stage配列のコピー
-    /// 回転などで使用
+    /// Stage配列の取得用
     /// </summary>
-    private int[,] _copy_Stage = default;
+    public int[,] _public_Stage
+    {
+        get { return _stage; }
+        set { _stage = value; }
+    }
+
     #endregion
 
     #region int
     /// <summary>
     /// 生成するminoを1～7に設定する
     /// </summary>
-    private int _generate_Mino = default;
+    protected int _generate_Mino = default;
+    public int _Generate_mino
+    {
+        get { return _generate_Mino; }
+        set { _generate_Mino = value; }
+    }
     #endregion
 
     #region bool
@@ -82,19 +87,13 @@ public class Map : MonoBehaviour
     private const int _LEFT_TURN = 2;
     #endregion
 
-    private void Update()
-    {
-        
-    }
-
     /// <summary>
     /// minoの生成
     /// </summary>
     public void Generate()
     {
         // Randomで0～6を格納
-        //_generate_Mino = Random.Range(_variables._zero, (int)_mino_Type.Length);
-        _generate_Mino = 1;
+        _generate_Mino = Random.Range(Variables._zero, (int)_mino_Type.Length);
         // 0～6で処理を分ける
         switch (_generate_Mino)
         {
@@ -102,69 +101,69 @@ public class Map : MonoBehaviour
             // 343
             //  3
             case (int)_mino_Type.Tmino:
-                _stage[_stage.GetLength(_variables._zero), (_stage.GetLength(_variables._one) - _variables._two) / _variables._two] = _variables._mino_Center;
-                _stage[_stage.GetLength(_variables._zero) - _variables._one, (_stage.GetLength(_variables._one) - _variables._two) / _variables._two - _variables._one] = _variables._now_Mino;
-                _stage[_stage.GetLength(_variables._zero) - _variables._one, (_stage.GetLength(_variables._one) - _variables._two) / _variables._two] = _variables._now_Mino;
-                _stage[_stage.GetLength(_variables._zero) - _variables._one, (_stage.GetLength(_variables._one) - _variables._two) / _variables._two + _variables._one] = _variables._now_Mino;
+                _stage[_stage.GetLength(Variables._zero) - Variables._one, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two] = Variables._mino_Center;
+                _stage[_stage.GetLength(Variables._zero) - Variables._two, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two - Variables._one] = Variables._now_Mino;
+                _stage[_stage.GetLength(Variables._zero) - Variables._two, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two] = Variables._now_Mino;
+                _stage[_stage.GetLength(Variables._zero) - Variables._two, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two + Variables._one] = Variables._now_Mino;
                 break;
             
             // Iminoの場合
             // 3433
             case (int)_mino_Type.Imino:
-                _stage[_stage.GetLength(0), (_stage.GetLength(1) - 5) / 2] = 4;
-                _stage[_stage.GetLength(_variables._zero), (_stage.GetLength(_variables._one) - _variables._two) / _variables._two + _variables._one] = 3;
-                _stage[_stage.GetLength(_variables._zero), (_stage.GetLength(_variables._one) - _variables._two) / _variables._two + _variables._two] = 3;
-                _stage[_stage.GetLength(_variables._zero), (_stage.GetLength(_variables._one) - _variables._two) / _variables._two - _variables._one] = 3;
+                _stage[_stage.GetLength(Variables._zero) - Variables._one, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two] = 4;
+                _stage[_stage.GetLength(Variables._zero) - Variables._one, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two + Variables._one] = 3;
+                _stage[_stage.GetLength(Variables._zero) - Variables._one, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two + Variables._two] = 3;
+                _stage[_stage.GetLength(Variables._zero) - Variables._one, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two - Variables._one] = 3;
                 break;
 
             // Ominoの場合
             //  43
             //  33
             case (int)_mino_Type.Omino:
-                _stage[_stage.GetLength(_variables._zero), (_stage.GetLength(_variables._one) - _variables._two) / _variables._two] = _variables._mino_Center;
-                _stage[_stage.GetLength(_variables._zero), (_stage.GetLength(_variables._one) - _variables._two) / _variables._two + _variables._one] = _variables._now_Mino;
-                _stage[_stage.GetLength(_variables._zero) - _variables._one, (_stage.GetLength(_variables._one) - _variables._two) / _variables._two] = _variables._now_Mino;
-                _stage[_stage.GetLength(_variables._zero) - _variables._one, (_stage.GetLength(_variables._one) - _variables._two) / _variables._two + _variables._one] = _variables._now_Mino;
+                _stage[_stage.GetLength(Variables._zero) - Variables._one, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two] = Variables._mino_Center;
+                _stage[_stage.GetLength(Variables._zero) - Variables._one, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two + Variables._one] = Variables._now_Mino;
+                _stage[_stage.GetLength(Variables._zero) - Variables._two, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two] = Variables._now_Mino;
+                _stage[_stage.GetLength(Variables._zero) - Variables._two, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two + Variables._one] = Variables._now_Mino;
                 break;
 
             // Jminoの場合
             // 343
             // 3
             case (int)_mino_Type.Jmino:
-                _stage[_stage.GetLength(_variables._zero), (_stage.GetLength(_variables._one) - _variables._two) / _variables._two - _variables._one] = _variables._now_Mino;
-                _stage[_stage.GetLength(_variables._zero) - _variables._one, (_stage.GetLength(_variables._one) - _variables._two) / _variables._two] = _variables._mino_Center;
-                _stage[_stage.GetLength(_variables._zero) - _variables._one, (_stage.GetLength(_variables._one) - _variables._two) / _variables._two - _variables._one] = _variables._now_Mino;
-                _stage[_stage.GetLength(_variables._zero) - _variables._one, (_stage.GetLength(_variables._one) - _variables._two) / _variables._two + _variables._one] = _variables._now_Mino;
+                _stage[_stage.GetLength(Variables._zero) - Variables._one, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two - Variables._one] = Variables._now_Mino;
+                _stage[_stage.GetLength(Variables._zero) - Variables._two, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two] = Variables._mino_Center;
+                _stage[_stage.GetLength(Variables._zero) - Variables._two, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two - Variables._one] = Variables._now_Mino;
+                _stage[_stage.GetLength(Variables._zero) - Variables._two, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two + Variables._one] = Variables._now_Mino;
                 break;
 
             // Lminoの場合
             // 343
             //   3
             case (int)_mino_Type.Lmino:
-                _stage[_stage.GetLength(_variables._zero), (_stage.GetLength(_variables._one) - _variables._two) / _variables._two + _variables._one] = _variables._now_Mino;
-                _stage[_stage.GetLength(_variables._zero) - _variables._one, (_stage.GetLength(_variables._one) - _variables._two) / _variables._two - _variables._one] = _variables._now_Mino;
-                _stage[_stage.GetLength(_variables._zero) - _variables._one, (_stage.GetLength(_variables._one) - _variables._two) / _variables._two] = _variables._mino_Center;
-                _stage[_stage.GetLength(_variables._zero) - _variables._one, (_stage.GetLength(_variables._one) - _variables._two) / _variables._two + _variables._one] = _variables._now_Mino;
+                _stage[_stage.GetLength(Variables._zero) - Variables._one, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two + Variables._one] = Variables._now_Mino;
+                _stage[_stage.GetLength(Variables._zero) - Variables._two, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two - Variables._one] = Variables._now_Mino;
+                _stage[_stage.GetLength(Variables._zero) - Variables._two, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two] = Variables._mino_Center;
+                _stage[_stage.GetLength(Variables._zero) - Variables._two, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two + Variables._one] = Variables._now_Mino;
                 break;
 
             // Zminoの場合
             //  43
             // 33
             case (int)_mino_Type.Zmino:
-                _stage[_stage.GetLength(_variables._zero), (_stage.GetLength(_variables._one) - _variables._two) / _variables._two] = _variables._mino_Center;
-                _stage[_stage.GetLength(_variables._zero), (_stage.GetLength(_variables._one) - _variables._two) / _variables._two - _variables._one] = _variables._now_Mino;
-                _stage[_stage.GetLength(_variables._zero) - _variables._one, (_stage.GetLength(_variables._one) - _variables._two) / _variables._two] = _variables._now_Mino;
-                _stage[_stage.GetLength(_variables._zero) - _variables._one, (_stage.GetLength(_variables._one) - _variables._two) / _variables._two + _variables._one] = _variables._now_Mino;
+                _stage[_stage.GetLength(Variables._zero) - Variables._one, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two] = Variables._mino_Center;
+                _stage[_stage.GetLength(Variables._zero) - Variables._one, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two - Variables._one] = Variables._now_Mino;
+                _stage[_stage.GetLength(Variables._zero) - Variables._two, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two] = Variables._now_Mino;
+                _stage[_stage.GetLength(Variables._zero) - Variables._two, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two + Variables._one] = Variables._now_Mino;
                 break;
 
             // Sminoの場合
             // 34
             //  33
             case (int)_mino_Type.Smino:
-                _stage[_stage.GetLength(_variables._zero), (_stage.GetLength(_variables._one) - _variables._two) / _variables._two] = _variables._mino_Center;
-                _stage[_stage.GetLength(_variables._zero), (_stage.GetLength(_variables._one) - _variables._two) / _variables._two + _variables._one] = _variables._now_Mino;
-                _stage[_stage.GetLength(_variables._zero) - _variables._one, (_stage.GetLength(_variables._one) - _variables._two) / _variables._two] = _variables._now_Mino;
-                _stage[_stage.GetLength(_variables._zero) - _variables._one, (_stage.GetLength(_variables._one) - _variables._two) / _variables._two - _variables._one] = _variables._now_Mino;
+                _stage[_stage.GetLength(Variables._zero) - Variables._one, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two] = Variables._mino_Center;
+                _stage[_stage.GetLength(Variables._zero) - Variables._one, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two + Variables._one] = Variables._now_Mino;
+                _stage[_stage.GetLength(Variables._zero) - Variables._two, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two] = Variables._now_Mino;
+                _stage[_stage.GetLength(Variables._zero) - Variables._two, (_stage.GetLength(Variables._one) - Variables._two) / Variables._two - Variables._one] = Variables._now_Mino;
                 break;
         }
     }
@@ -174,14 +173,14 @@ public class Map : MonoBehaviour
     /// </summary>
     protected void Fall()
     {
-        for (int y = 0; y < _stage.GetLength(_variables._zero); y++)
+        for (int y = 0; y < _stage.GetLength(Variables._zero); y++)
         {
-            for (int x = 0; x < _stage.GetLength(_variables._one); x++)
+            for (int x = 0; x < _stage.GetLength(Variables._one); x++)
             {
-                if (_stage[y, x] == _variables._mino_Center && _stage[y - _variables._one, x] != _variables._cant_Move_Area)
+                if (_stage[y, x] == Variables._mino_Center && _stage[y - Variables._one, x] != Variables._cant_Move_Area)
                 {
-                    _stage[y - _variables._one, x] = _stage[y, x];
-                    _stage[y, x] = _variables._air;
+                    _stage[y - Variables._one, x] = _stage[y, x];
+                    _stage[y, x] = Variables._air;
                 }
             }
         }
@@ -194,9 +193,9 @@ public class Map : MonoBehaviour
     protected void Move(Vector2 Input)
     {
         // 入力値のyが0より大きかったら0にする
-        if (Input.y > _variables._zero)
+        if (Input.y > Variables._zero)
         {
-            Input.y = _variables._zero;
+            Input.y = Variables._zero;
         }
 
         /*
@@ -246,12 +245,11 @@ public class Map : MonoBehaviour
     /// <param name="turn_direction">回転の向き</param>
     protected void Turn(int turn_direction)
     {
-        _copy_Stage = _stage;
-        for (int y = 0; y < _stage.GetLength(_variables._zero); y++)
+        for (int y = 0; y < _stage.GetLength(Variables._zero); y++)
         {
-            for (int x = 0; x < _stage.GetLength(_variables._one); x++)
+            for (int x = 0; x < _stage.GetLength(Variables._one); x++)
             {
-                if (_stage[y, x] == _variables._mino_Center && _stage[y - _variables._one, x] != _variables._cant_Move_Area)
+                if (_stage[y, x] == Variables._mino_Center && _stage[y - Variables._one, x] != Variables._cant_Move_Area)
                 {
                     switch (_generate_Mino)
                     {

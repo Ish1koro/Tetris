@@ -28,30 +28,26 @@ public class PlayerController : Map
     {
         _playerinput = GetComponent<PlayerInput>();
         _viewController = GetComponent<ViewController>();
-        Debug.Log(_stage.GetLength(0));
-        Debug.Log(_stage.GetLength(1));
         Generate();
     }
 
     private void Upadate()
     {
         Fall();
-
-
     }
 
     private void OnEnable()
     {
-        _playerinput.actions[_variables._move].performed += Move;
-        _playerinput.actions[_variables._turn_Key].started += TurnKey;
-        _playerinput.actions[_variables._turn_Pad].performed += TurnPad;
+        _playerinput.actions[Variables._move].performed += Move;
+        _playerinput.actions[Variables._turn_Key].started += TurnKey;
+        _playerinput.actions[Variables._turn_Pad].performed += TurnPad;
     }
 
     private void OnDisable()
     {
-        _playerinput.actions[_variables._move].performed -= Move;
-        _playerinput.actions[_variables._turn_Key].started -= TurnKey;
-        _playerinput.actions[_variables._turn_Pad].performed -= TurnPad;
+        _playerinput.actions[Variables._move].performed -= Move;
+        _playerinput.actions[Variables._turn_Key].started -= TurnKey;
+        _playerinput.actions[Variables._turn_Pad].performed -= TurnPad;
     }
 
     private void Move(InputAction.CallbackContext obj)
@@ -62,7 +58,7 @@ public class PlayerController : Map
 
     private void TurnKey(InputAction.CallbackContext obj)
     {
-        Turn(_variables._one);
+        Turn(Variables._one);
     }
 
     private void TurnPad(InputAction.CallbackContext obj)

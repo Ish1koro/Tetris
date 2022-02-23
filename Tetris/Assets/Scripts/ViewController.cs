@@ -4,15 +4,51 @@ using UnityEngine;
 
 public class ViewController : MonoBehaviour
 {
-    private Map _map = default;
+    private PlayerController _playerController = default;
+    private AI _aI = default;
+
+    private _type _script_Type = default;
+
+    #region View関係
+    private const int _spawn_Postion_X = 12;
+    private const int _spawn_Postion_Y = 21;
+    private const int _STAGE_DISTANCE = 10;
+    #endregion
+
+    private enum _type
+    {
+        Player,
+        AI
+    }
 
     private void Awake()
     {
-        _map = GetComponent<Map>();
+
+        if (TryGetComponent(out _playerController))
+        {
+            _script_Type = _type.Player;
+        }
+        else if (TryGetComponent(out _aI))
+        {
+            _script_Type = _type.AI;
+        }
+
+        GenerateMino();
     }
 
-    public void Move( Vector2 Position)
+    private void GenerateMino()
     {
-        transform.position = Position;
+        switch (_script_Type)
+        {
+            case _type.Player:
+                break;
+            case _type.AI:
+                break;
+        }
+    }
+
+    private void MovemMino()
+    {
+
     }
 }
