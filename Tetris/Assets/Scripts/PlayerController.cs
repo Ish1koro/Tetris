@@ -24,16 +24,12 @@ public class PlayerController : Map
     #region int
     #endregion
 
-    private void Awake()
+    protected override void Awake()
     {
         _playerinput = GetComponent<PlayerInput>();
         _viewController = GetComponent<ViewController>();
-        Generate();
-    }
-
-    private void Upadate()
-    {
-        Fall();
+        base.Awake();
+        
     }
 
     private void OnEnable()
