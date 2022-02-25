@@ -29,7 +29,11 @@ public class PlayerController : Map
         _playerinput = GetComponent<PlayerInput>();
         _viewController = GetComponent<ViewController>();
         base.Awake();
-        
+    }
+
+    protected void Update()
+    {
+        Fall();
     }
 
     private void OnEnable()

@@ -13,33 +13,34 @@ public class Map : MonoBehaviour
     protected ViewController _viewController = default;
     #endregion
 
+    private Queue<int> _generate_Queue = new Queue<int>();
+
     #region Stage配列(縦21×横12の配列)
     /// <summary>
     /// 0,空気　1,壁　2,動かせなくなったmino　3,現在動かしているmino　4,minoの中心　5,落とせる位置
     /// </summary>
-    protected int[,] _stage = new int[21, 12]
+    protected int[,] _stage = new int[20, 10]
     {
-        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
     };
 
     /// <summary>
@@ -51,6 +52,9 @@ public class Map : MonoBehaviour
         set { _stage = value; }
     }
 
+    /// <summary>
+    /// 現在のminoの位置(y, x)の順番
+    /// </summary>
     protected int[,] _now_Mino_Position = new int[4, 2]
     {
         { 0, 0},
@@ -58,28 +62,35 @@ public class Map : MonoBehaviour
         { 0, 0},
         { 0, 0}
     };
+
+    /// <summary>
+    /// 現在のminoの位置の取得用
+    /// </summary>
     public int[,] _Mino_Position
     {
         get { return _now_Mino_Position; }
         set { _now_Mino_Position = value; }
     }
 
+    /// <summary>
+    /// minoの生成位置
+    /// </summary>
     private int[,] _Generate_Position = new int[7, 8]
     {
         // Tmino
-        {20, 5, 19, 4, 19, 5, 19, 6 },
+        {20, 19, 19, 19, 5, 4, 5, 6 },
         // Imino
-        {20, 5, 20, 6, 20, 7, 20, 4 },
+        {20, 20, 20, 20, 5, 6, 7, 4 },
         // Omino
-        {20, 5, 20, 6, 19, 5, 19, 6 },
+        {20, 20, 19, 19, 5, 6, 5, 6 },
         // Jmino
-        {20, 5, 19, 5, 19, 4, 19, 6 },
+        {20, 19, 19, 19, 5, 5, 4, 6 },
         // Lmino
-        {20, 6, 19, 5, 19, 4, 19, 6 },
+        {20, 19, 19, 19, 6, 5, 4, 6 },
         // Zmino
-        {20, 5, 20, 4, 19, 5, 19, 6 },
+        {20, 20, 19, 19, 5, 4, 5, 6 },
         // Smino
-        {20, 5, 20, 6, 19, 5, 19, 4 }
+        {20, 20, 19, 19, 5, 6, 5, 4 }
     };
     #endregion
 
@@ -88,10 +99,13 @@ public class Map : MonoBehaviour
     /// 生成するminoを1～7に設定する
     /// </summary>
     protected int _generate_Mino = default;
-    public int _Generate_mino
+
+    private int _now_Mino = default;
+
+    public int _now_Generate_Mino
     {
-        get { return _generate_Mino; }
-        set { _generate_Mino = value; }
+        get { return _now_Mino; }
+        set { _now_Mino = value; }
     }
 
     /// <summary>
@@ -110,12 +124,11 @@ public class Map : MonoBehaviour
 
     protected virtual void Awake()
     {
-        Generate();
-    }
-
-    protected void Update()
-    {
-        Fall();
+        for (int count = Variables._zero; count < Variables._five; count++)
+        {
+            _generate_Mino = Random.Range(Variables._zero, (int)Variables._mino_Type.Length);
+            _generate_Queue.Enqueue(_generate_Mino);
+        }
     }
 
     /// <summary>
@@ -123,8 +136,12 @@ public class Map : MonoBehaviour
     /// </summary>
     public void Generate()
     {
-        // Randomで0～6を格納
+        _now_Mino = _generate_Queue.Dequeue();
+
+        // Randomで0～6をキューに格納
         _generate_Mino = Random.Range(Variables._zero, (int)Variables._mino_Type.Length);
+        _generate_Queue.Enqueue(_generate_Mino);
+
         #region// 0～6で処理を分ける
         //switch (_generate_Mino)
         //{
@@ -198,13 +215,13 @@ public class Map : MonoBehaviour
         //        break;
         //}
         #endregion
-        for (int i = 0; i < _Generate_Position.GetLength(Variables._zero); i += Variables._two)
+        
+        // 
+        for (int block_count = 0; block_count < Variables._four; block_count++)
         {
-            _stage[_Generate_Position[_generate_Mino, i], _Generate_Position[_generate_Mino, i + Variables._one]] = Variables._now_Mino;
-            for (int y = 0; y <_now_Mino_Position.GetLength(1); y++)
-            {
-                _now_Mino_Position[Variables._zero, y] = _Generate_Position[_generate_Mino, i];
-            }
+            _stage[_Generate_Position[_generate_Mino, block_count], _Generate_Position[_generate_Mino, block_count + Variables._four]] = Variables._now_Mino;
+            _now_Mino_Position[block_count, Variables._zero] = _Generate_Position[_generate_Mino, block_count];
+            _now_Mino_Position[block_count, Variables._one] = _Generate_Position[_generate_Mino, block_count + Variables._one];
         }
     }
 
@@ -213,7 +230,7 @@ public class Map : MonoBehaviour
     /// </summary>
     protected void Fall()
     {
-        
+
     }
 
     /// <summary>

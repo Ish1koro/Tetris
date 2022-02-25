@@ -25,8 +25,8 @@ public static class Variables
     #endregion
 
     #region 配列関係
-    public static int _mino_Generate_Position_X { get; } = 5;
-    public static int _mino_Generate_Position_Y { get; } = 20;
+    public static int _mino_Generate_Position_X { get; } = 4;
+    public static int _mino_Generate_Position_Y { get; } = 19;
     public static int _cant_Move_Area { get; } = 1 << 1 | 1 << 2;
     public static int _air { get; } = 0;
     public static int _wall { get; } = 1;
