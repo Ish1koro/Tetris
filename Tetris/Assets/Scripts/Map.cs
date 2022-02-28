@@ -92,6 +92,14 @@ public class Map : MonoBehaviour
         // Smino
         {20, 20, 19, 19, 5, 6, 5, 4 }
     };
+
+    private int[,] _delete_Queue = new int[4, 1]
+    {
+        { 0 },
+        { 0 },
+        { 0 },
+        { 0 },
+    };
     #endregion
 
     #region int
@@ -111,15 +119,21 @@ public class Map : MonoBehaviour
     /// <summary>
     /// 回転した数
     /// </summary>
-    protected int _now_Mino_Rotate = default;
+    protected int _now_Directon = default;
     #endregion
 
     #region bool
+    /// <summary>
+    /// 落下できるかどうか
+    /// </summary>
+    protected bool _can_Fall = default;
+
+    protected bool _isGameOver = default;
     #endregion
 
     #region minoの回転の向き
     private const int _RIGHT_TURN = 1;
-    private const int _LEFT_TURN = 2;
+    private const int _LEFT_TURN = -1;
     #endregion
 
     protected virtual void Awake()
@@ -215,14 +229,15 @@ public class Map : MonoBehaviour
         //        break;
         //}
         #endregion
-        
-        // 
-        for (int block_count = 0; block_count < Variables._four; block_count++)
+
+        // 配列上にminoを生成
+        for (int block_count = default; block_count < _now_Mino_Position.GetLength(Variables._zero); block_count++)
         {
             _stage[_Generate_Position[_generate_Mino, block_count], _Generate_Position[_generate_Mino, block_count + Variables._four]] = Variables._now_Mino;
             _now_Mino_Position[block_count, Variables._zero] = _Generate_Position[_generate_Mino, block_count];
             _now_Mino_Position[block_count, Variables._one] = _Generate_Position[_generate_Mino, block_count + Variables._one];
         }
+        _can_Fall = true;
     }
 
     /// <summary>
@@ -230,6 +245,32 @@ public class Map : MonoBehaviour
     /// </summary>
     protected void Fall()
     {
+
+        for (int block_count = default; block_count < _now_Mino_Position.GetLength(Variables._zero); block_count += Variables._two)
+        {
+            // 壁か古いminoに触れているとき
+            bool IsHit = _stage[_now_Mino_Position[block_count, Variables._zero] + Variables._one, _now_Mino_Position[block_count, Variables._one]] == Variables._wall || _stage[_now_Mino_Position[block_count, Variables._zero] + Variables._one, _now_Mino_Position[block_count, Variables._one]] == Variables._old_Mino;
+            // 落下できなくてfor文の一週目の時
+            _stage[_now_Mino_Position[block_count, Variables._zero], _now_Mino_Position[block_count, Variables._one]] = Variables._air;
+            _stage[_now_Mino_Position[block_count, Variables._zero] - Variables._one, _now_Mino_Position[block_count, Variables._one]] = Variables._now_Mino;
+            _now_Mino_Position[block_count, Variables._zero] = _now_Mino_Position[block_count, Variables._zero] + Variables._one;
+
+            if (IsHit)
+            {
+                _can_Fall = false;
+            }
+        }
+
+        if (!_can_Fall)
+        {
+            for (int block_count = default; block_count < _now_Mino_Position.GetLength(Variables._zero); block_count++)
+            {
+                if(_now_Mino_Position[block_count, Variables._zero] == _stage.GetLength(Variables._zero))
+                {
+                    _isGameOver = true;
+                }
+            }
+        }
 
     }
 
@@ -245,44 +286,12 @@ public class Map : MonoBehaviour
             Input.y = Variables._zero;
         }
 
-        /*
-        for (int y = 0; y < _variables._stage_Y_Length; y++)
+        for (int block_count = default; block_count < _now_Mino_Position.GetLength(Variables._zero); block_count++)
         {
-            for (int x = 0; x < _variables._stage_X_Length; x++)
-            {
-                if (_stage[y, x] == _variables._now_Mino && _stage[y + (int)Input.y, x + (int)Input.x] != _variables._cant_Move_Area)
-                {
-                    switch (_generate_Mino)
-                    {
-                        case (int)_mino_Type.Tmino:
-                            _stage[_generate_Position_X, _generate_Position_Y] = _variables._now_Mino;
-                            _stage[_generate_Position_X - _variables._one, _generate_Position_Y - _variables._one] = _variables._now_Mino;
-                            _stage[_generate_Position_X, _generate_Position_Y - _variables._one] = _variables._now_Mino;
-                            _stage[_generate_Position_X + _variables._one, _generate_Position_Y - _variables._one] = _variables._now_Mino;
-                            break;
-
-                        case (int)_mino_Type.Imino:
-                            break;
-
-                        case (int)_mino_Type.Omino:
-                            break;
-
-                        case (int)_mino_Type.Jmino:
-                            break;
-
-                        case (int)_mino_Type.Lmino:
-                            break;
-
-                        case (int)_mino_Type.Zmino:
-                            break;
-
-                        case (int)_mino_Type.Smino:
-                            break;
-                    }
-                }
-            }
+            _stage[_now_Mino_Position[block_count, Variables._zero], _now_Mino_Position[block_count, Variables._one]] = Variables._air;
+            _stage[_now_Mino_Position[block_count, Variables._zero], _now_Mino_Position[block_count, Variables._one] + Variables._one] = Variables._now_Mino;
+            _now_Mino_Position[block_count, Variables._one] = _now_Mino_Position[block_count, Variables._one] + Variables._one;
         }
-        */
     }
 
     /// <summary>
@@ -292,9 +301,34 @@ public class Map : MonoBehaviour
     /// <param name="turn_direction">回転の向き</param>
     protected void Turn(int turn_direction)
     {
-        for (int y = 0; y < _stage.GetLength(Variables._zero); y++)
+        switch (turn_direction)
         {
-            for (int x = 0; x < _stage.GetLength(Variables._one); x++)
+            case _RIGHT_TURN:
+                if (_now_Directon == Variables._three)
+                {
+                    _now_Directon = Variables._zero;
+                }
+                else
+                {
+                    _now_Directon += turn_direction;
+                }
+                break;
+
+            case _LEFT_TURN:
+                if (_now_Directon == Variables._zero)
+                {
+                    _now_Directon = Variables._zero;
+                }
+                else
+                {
+                    _now_Directon += turn_direction;
+                }
+                break;
+        }
+
+        for (int y = default; y < _stage.GetLength(Variables._zero); y++)
+        {
+            for (int x = default; x < _stage.GetLength(Variables._one); x++)
             {
                 if (_stage[y, x] == Variables._mino_Center && _stage[y - Variables._one, x] != Variables._cant_Move_Area)
                 {
@@ -303,6 +337,50 @@ public class Map : MonoBehaviour
                         case (int)Variables._mino_Type.Tmino:
                             break;
                     }
+                }
+            }
+        }
+
+
+    }
+
+    protected void Delete()
+    {
+        for (int y = default; y < _stage.GetLength(Variables._zero); y++)
+        {
+            int delete_line = default;
+            for (int x = Variables._zero; x < _stage.GetLength(Variables._one); x++)
+            {
+                int block_count = default;
+                if (_stage[y, x] == Variables._old_Mino)
+                {
+                    block_count++;
+                }
+
+                if (block_count == _stage.GetLength(Variables._one))
+                {
+                    _delete_Queue[delete_line, Variables._zero] = y;
+                    delete_line++;
+                }
+            }
+        }
+
+        // 上で格納した座標を取り出し
+        for (int y = default; y < _stage.GetLength(Variables._zero); y++)
+        {
+            // 削除する列の高さをとる
+            int delete_line = _delete_Queue[y, Variables._zero];
+            
+            // 削除した分行を下げる削除した分はyに1足した数
+            for (int x = default; x < _stage.GetLength(Variables._zero); x++)
+            {
+                if (delete_line + y + Variables._one < _stage.GetLength(Variables._zero)) 
+                {
+                    _stage[delete_line, x] = _stage[delete_line + y + Variables._one, x];
+                }
+                else
+                {
+                    _stage[delete_line, x] = Variables._air;
                 }
             }
         }

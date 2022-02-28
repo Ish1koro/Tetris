@@ -33,6 +33,7 @@ public class PlayerController : Map
 
     protected void Update()
     {
+
         Fall();
     }
 

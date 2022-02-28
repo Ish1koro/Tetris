@@ -111,7 +111,7 @@
                 {
                     "name": "GamePad",
                     "id": "e4153a40-effd-4c95-8ca8-90b5a03635c7",
-                    "path": "1DAxis(minValue=2,whichSideWins=2)",
+                    "path": "1DAxis(whichSideWins=2)",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
