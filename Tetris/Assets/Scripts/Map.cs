@@ -78,19 +78,19 @@ public class Map : MonoBehaviour
     private int[,] _Generate_Position = new int[7, 8]
     {
         // Tmino
-        {20, 19, 19, 19, 5, 4, 5, 6 },
+        {19, 18, 18, 18, 5, 4, 5, 6 },
         // Imino
-        {20, 20, 20, 20, 5, 6, 7, 4 },
+        {19, 19, 19, 19, 5, 6, 7, 4 },
         // Omino
-        {20, 20, 19, 19, 5, 6, 5, 6 },
+        {19, 19, 18, 18, 5, 6, 5, 6 },
         // Jmino
-        {20, 19, 19, 19, 5, 5, 4, 6 },
+        {19, 18, 18, 18, 5, 5, 4, 6 },
         // Lmino
-        {20, 19, 19, 19, 6, 5, 4, 6 },
+        {19, 18, 18, 18, 6, 5, 4, 6 },
         // Zmino
-        {20, 20, 19, 19, 5, 4, 5, 6 },
+        {19, 19, 18, 18, 5, 4, 5, 6 },
         // Smino
-        {20, 20, 19, 19, 5, 6, 5, 4 }
+        {19, 19, 18, 18, 5, 6, 5, 4 }
     };
 
     private int[,] _delete_Queue = new int[4, 1]
@@ -129,6 +129,11 @@ public class Map : MonoBehaviour
     protected bool _can_Fall = default;
 
     protected bool _isGameOver = default;
+    public bool _GameOver
+    {
+        get { return _isGameOver; }
+        set { _isGameOver = value; }
+    }
     #endregion
 
     #region minoの回転の向き
@@ -143,6 +148,7 @@ public class Map : MonoBehaviour
             _generate_Mino = Random.Range(Variables._zero, (int)Variables._mino_Type.Length);
             _generate_Queue.Enqueue(_generate_Mino);
         }
+        Generate();
     }
 
     /// <summary>
@@ -235,7 +241,8 @@ public class Map : MonoBehaviour
         {
             _stage[_Generate_Position[_generate_Mino, block_count], _Generate_Position[_generate_Mino, block_count + Variables._four]] = Variables._now_Mino;
             _now_Mino_Position[block_count, Variables._zero] = _Generate_Position[_generate_Mino, block_count];
-            _now_Mino_Position[block_count, Variables._one] = _Generate_Position[_generate_Mino, block_count + Variables._one];
+            _now_Mino_Position[block_count, Variables._one] = _Generate_Position[_generate_Mino, block_count + Variables._four];
+            Debug.Log(block_count);
         }
         _can_Fall = true;
     }
@@ -245,33 +252,39 @@ public class Map : MonoBehaviour
     /// </summary>
     protected void Fall()
     {
-
-        for (int block_count = default; block_count < _now_Mino_Position.GetLength(Variables._zero); block_count += Variables._two)
-        {
-            // 壁か古いminoに触れているとき
-            bool IsHit = _stage[_now_Mino_Position[block_count, Variables._zero] + Variables._one, _now_Mino_Position[block_count, Variables._one]] == Variables._wall || _stage[_now_Mino_Position[block_count, Variables._zero] + Variables._one, _now_Mino_Position[block_count, Variables._one]] == Variables._old_Mino;
-            // 落下できなくてfor文の一週目の時
-            _stage[_now_Mino_Position[block_count, Variables._zero], _now_Mino_Position[block_count, Variables._one]] = Variables._air;
-            _stage[_now_Mino_Position[block_count, Variables._zero] - Variables._one, _now_Mino_Position[block_count, Variables._one]] = Variables._now_Mino;
-            _now_Mino_Position[block_count, Variables._zero] = _now_Mino_Position[block_count, Variables._zero] + Variables._one;
-
-            if (IsHit)
-            {
-                _can_Fall = false;
-            }
-        }
-
-        if (!_can_Fall)
+        // 落とせるとき
+        if (_can_Fall)
         {
             for (int block_count = default; block_count < _now_Mino_Position.GetLength(Variables._zero); block_count++)
             {
-                if(_now_Mino_Position[block_count, Variables._zero] == _stage.GetLength(Variables._zero))
+                Debug.Log(_stage[_now_Mino_Position[block_count, Variables._zero], _now_Mino_Position[block_count, Variables._one]]);
+                // 現在の配列の位置を空気にする
+                _stage[_now_Mino_Position[block_count, Variables._zero], _now_Mino_Position[block_count, Variables._one]] = Variables._air;
+                // 現在の-1の配列の位置を今動かしているブロックにする
+                _stage[_now_Mino_Position[block_count, Variables._zero] - Variables._one, _now_Mino_Position[block_count, Variables._one]] = Variables._now_Mino;
+                // 現在動かしているminoの位置の配列を更新
+                _now_Mino_Position[block_count, Variables._zero] = _now_Mino_Position[block_count, Variables._zero] - Variables._one;
+
+                // 壁か古いminoに触れているとき
+                if (_stage[_now_Mino_Position[block_count, Variables._zero] - Variables._one, _now_Mino_Position[block_count, Variables._one]] == Variables._cant_Move_Area)
+                {
+                    // 落下できなくする
+                    _can_Fall = false;
+                }
+            }
+        }
+        // 落とせないとき
+        else
+        {
+            for (int block_count = default; block_count < _now_Mino_Position.GetLength(Variables._zero); block_count++)
+            {
+                // 
+                if (_now_Mino_Position[block_count, Variables._zero] == _stage.GetLength(Variables._zero) - Variables._one)
                 {
                     _isGameOver = true;
                 }
             }
         }
-
     }
 
     /// <summary>

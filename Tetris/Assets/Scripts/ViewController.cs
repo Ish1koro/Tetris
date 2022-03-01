@@ -23,7 +23,6 @@ public class ViewController : MonoBehaviour
 
     private void Awake()
     {
-
         if (TryGetComponent(out _playerController))
         {
             _script_Type = _type.Player;
@@ -32,8 +31,6 @@ public class ViewController : MonoBehaviour
         {
             _script_Type = _type.AI;
         }
-
-        GenerateMino();
     }
 
     private void GenerateMino()

@@ -16,6 +16,8 @@ public static class Variables
     public static int _six { get; } = 6;
     public static int _seven { get; } = 7;
     public static int _eight { get; } = 8;
+    public static int _Fall_Interval { get; } = 2;
+
     #endregion
 
     #region InputSystemのActionsの名前
@@ -36,6 +38,9 @@ public static class Variables
     public static int _can_Fall_Position { get; } = 5;
     #endregion
 
+    /// <summary>
+    /// minoの種類
+    /// </summary>
     public enum _mino_Type
     {
         Tmino,
@@ -48,6 +53,9 @@ public static class Variables
         Length
     }
 
+    /// <summary>
+    /// minoの回転
+    /// </summary>
     public enum _mino_Rotate
     {
         Up,

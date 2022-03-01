@@ -24,6 +24,10 @@ public class PlayerController : Map
     #region int
     #endregion
 
+    #region float
+    private float _fall_Timer = 2;
+    #endregion
+
     protected override void Awake()
     {
         _playerinput = GetComponent<PlayerInput>();
@@ -33,8 +37,15 @@ public class PlayerController : Map
 
     protected void Update()
     {
-
-        Fall();
+        if (_fall_Timer < Variables._zero)
+        {
+            Fall();
+            _fall_Timer = Variables._Fall_Interval;
+        }
+        else
+        {
+            _fall_Timer -= Time.deltaTime;
+        }
     }
 
     private void OnEnable()
