@@ -13,8 +13,6 @@ public class Map : MonoBehaviour
     protected ViewController _viewController = default;
     #endregion
 
-    private Queue<int> _generate_Queue = new Queue<int>();
-
     #region Stage配列(縦21×横12の配列)
     /// <summary>
     /// 0,空気　1,壁　2,動かせなくなったmino　3,現在動かしているmino　4,minoの中心　5,落とせる位置
@@ -93,6 +91,17 @@ public class Map : MonoBehaviour
         {19, 19, 18, 18, 5, 6, 5, 4 }
     };
 
+    /// <summary>
+    /// ゲーム内で出てくるminoのキュー
+    /// </summary>
+    private int[,] _generate_Queue = new int[1, 5]
+    {
+        { 0, 0, 0, 0, 0,}
+    };
+
+    /// <summary>
+    /// minoを削除する際のブロックのキュー
+    /// </summary>
     private int[,] _delete_Queue = new int[4, 1]
     {
         { 0 },
@@ -128,12 +137,23 @@ public class Map : MonoBehaviour
     /// </summary>
     protected bool _can_Fall = default;
 
+    /// <summary>
+    /// 移動可能か
+    /// </summary>
+    private bool _can_Move = default;
+
+    /// <summary>
+    /// minoが生成できなくなったらtrue
+    /// </summary>
     protected bool _isGameOver = default;
     public bool _GameOver
     {
         get { return _isGameOver; }
         set { _isGameOver = value; }
     }
+
+    private bool _isTurn = default;
+
     #endregion
 
     #region minoの回転の向き
@@ -143,10 +163,12 @@ public class Map : MonoBehaviour
 
     protected virtual void Awake()
     {
+        // ゲーム開始時のminoの生成
         for (int count = Variables._zero; count < Variables._five; count++)
         {
+            // ランダム関数でminoを生成
             _generate_Mino = Random.Range(Variables._zero, (int)Variables._mino_Type.Length);
-            _generate_Queue.Enqueue(_generate_Mino);
+            _generate_Queue[Variables._zero, count] = _generate_Mino;
         }
         Generate();
     }
@@ -156,93 +178,25 @@ public class Map : MonoBehaviour
     /// </summary>
     public void Generate()
     {
-        _now_Mino = _generate_Queue.Dequeue();
+        // キューに並んでいるmino
+        _now_Mino = _generate_Queue[Variables._zero, Variables._zero];
+        
+        // キューを更新
+        for (int count = default; count + Variables._one < _generate_Queue.GetLength(Variables._one); count++)
+        {
+            _generate_Queue[Variables._zero, count] = _generate_Queue[Variables._zero, count + Variables._one];
+        }
 
         // Randomで0～6をキューに格納
         _generate_Mino = Random.Range(Variables._zero, (int)Variables._mino_Type.Length);
-        _generate_Queue.Enqueue(_generate_Mino);
+        _generate_Queue[Variables._zero, Variables._four] = _generate_Mino;
 
-        #region// 0～6で処理を分ける
-        //switch (_generate_Mino)
-        //{
-        //    // Tminoの場合
-        //    // 343
-        //    //  3
-        //    case (int)Variables._mino_Type.Tmino:
-        //        _stage[Variables._mino_Generate_Position_Y, Variables._mino_Generate_Position_X] = Variables._mino_Center;
-        //        _stage[Variables._mino_Generate_Position_Y - Variables._one, Variables._mino_Generate_Position_X - Variables._one] = Variables._now_Mino;
-        //        _stage[Variables._mino_Generate_Position_Y - Variables._one, Variables._mino_Generate_Position_X] = Variables._now_Mino;
-        //        _stage[Variables._mino_Generate_Position_Y - Variables._one, Variables._mino_Generate_Position_X + Variables._one] = Variables._now_Mino;
-        //        break;
-
-        //    // Iminoの場合
-        //    // 3433
-        //    case (int)Variables._mino_Type.Imino:
-        //        _stage[Variables._mino_Generate_Position_Y, Variables._mino_Generate_Position_X] = 4;
-        //        _stage[Variables._mino_Generate_Position_Y, Variables._mino_Generate_Position_X + Variables._one] = 3;
-        //        _stage[Variables._mino_Generate_Position_Y, Variables._mino_Generate_Position_X + Variables._two] = 3;
-        //        _stage[Variables._mino_Generate_Position_Y, Variables._mino_Generate_Position_X - Variables._one] = 3;
-        //        break;
-
-        //    // Ominoの場合
-        //    //  43
-        //    //  33
-        //    case (int)Variables._mino_Type.Omino:
-        //        _stage[Variables._mino_Generate_Position_Y, Variables._mino_Generate_Position_X] = Variables._mino_Center;
-        //        _stage[Variables._mino_Generate_Position_Y, Variables._mino_Generate_Position_X + Variables._one] = Variables._now_Mino;
-        //        _stage[Variables._mino_Generate_Position_Y - Variables._one, Variables._mino_Generate_Position_X] = Variables._now_Mino;
-        //        _stage[Variables._mino_Generate_Position_Y - Variables._one, Variables._mino_Generate_Position_X + Variables._one] = Variables._now_Mino;
-        //        break;
-
-        //    // Jminoの場合
-        //    // 343
-        //    // 3
-        //    case (int)Variables._mino_Type.Jmino:
-        //        _stage[Variables._mino_Generate_Position_Y , Variables._mino_Generate_Position_X - Variables._one] = Variables._now_Mino;
-        //        _stage[Variables._mino_Generate_Position_Y - Variables._one, Variables._mino_Generate_Position_X] = Variables._mino_Center;
-        //        _stage[Variables._mino_Generate_Position_Y - Variables._one, Variables._mino_Generate_Position_X - Variables._one] = Variables._now_Mino;
-        //        _stage[Variables._mino_Generate_Position_Y - Variables._one, Variables._mino_Generate_Position_X + Variables._one] = Variables._now_Mino;
-        //        break;
-
-        //    // Lminoの場合
-        //    // 343
-        //    //   3
-        //    case (int)Variables._mino_Type.Lmino:
-        //        _stage[Variables._mino_Generate_Position_Y, Variables._mino_Generate_Position_X + Variables._one] = Variables._now_Mino;
-        //        _stage[Variables._mino_Generate_Position_Y - Variables._one, Variables._mino_Generate_Position_X - Variables._one] = Variables._now_Mino;
-        //        _stage[Variables._mino_Generate_Position_Y - Variables._one, Variables._mino_Generate_Position_X] = Variables._mino_Center;
-        //        _stage[Variables._mino_Generate_Position_Y - Variables._one, Variables._mino_Generate_Position_X + Variables._one] = Variables._now_Mino;
-        //        break;
-
-        //    // Zminoの場合
-        //    //  43
-        //    // 33
-        //    case (int)Variables._mino_Type.Zmino:
-        //        _stage[Variables._mino_Generate_Position_Y, Variables._mino_Generate_Position_X] = Variables._now_Mino;
-        //        _stage[Variables._mino_Generate_Position_Y, Variables._mino_Generate_Position_X - Variables._one] = Variables._now_Mino;
-        //        _stage[Variables._mino_Generate_Position_Y - Variables._one, Variables._mino_Generate_Position_X] = Variables._mino_Center;
-        //        _stage[Variables._mino_Generate_Position_Y - Variables._one, Variables._mino_Generate_Position_X + Variables._one] = Variables._now_Mino;
-        //        break;
-
-        //    // Sminoの場合
-        //    // 34
-        //    //  33
-        //    case (int)Variables._mino_Type.Smino:
-        //        _stage[Variables._mino_Generate_Position_Y, Variables._mino_Generate_Position_X] = Variables._now_Mino;
-        //        _stage[Variables._mino_Generate_Position_Y, Variables._mino_Generate_Position_X + Variables._one] = Variables._now_Mino;
-        //        _stage[Variables._mino_Generate_Position_Y - Variables._one, Variables._mino_Generate_Position_X] = Variables._mino_Center;
-        //        _stage[Variables._mino_Generate_Position_Y - Variables._one, Variables._mino_Generate_Position_X - Variables._one] = Variables._now_Mino;
-        //        break;
-        //}
-        #endregion
-
-        // 配列上にminoを生成
+        // stage配列上にminoを生成し配列の位置を現在動かしているminoの配列に格納
         for (int block_count = default; block_count < _now_Mino_Position.GetLength(Variables._zero); block_count++)
         {
             _stage[_Generate_Position[_generate_Mino, block_count], _Generate_Position[_generate_Mino, block_count + Variables._four]] = Variables._now_Mino;
             _now_Mino_Position[block_count, Variables._zero] = _Generate_Position[_generate_Mino, block_count];
             _now_Mino_Position[block_count, Variables._one] = _Generate_Position[_generate_Mino, block_count + Variables._four];
-            Debug.Log(block_count);
         }
         _can_Fall = true;
     }
@@ -257,7 +211,6 @@ public class Map : MonoBehaviour
         {
             for (int block_count = default; block_count < _now_Mino_Position.GetLength(Variables._zero); block_count++)
             {
-                Debug.Log(_stage[_now_Mino_Position[block_count, Variables._zero], _now_Mino_Position[block_count, Variables._one]]);
                 // 現在の配列の位置を空気にする
                 _stage[_now_Mino_Position[block_count, Variables._zero], _now_Mino_Position[block_count, Variables._one]] = Variables._air;
                 // 現在の-1の配列の位置を今動かしているブロックにする
@@ -278,7 +231,7 @@ public class Map : MonoBehaviour
         {
             for (int block_count = default; block_count < _now_Mino_Position.GetLength(Variables._zero); block_count++)
             {
-                // 
+                // yが配列の最後だった場合ゲームオーバー
                 if (_now_Mino_Position[block_count, Variables._zero] == _stage.GetLength(Variables._zero) - Variables._one)
                 {
                     _isGameOver = true;
@@ -301,9 +254,25 @@ public class Map : MonoBehaviour
 
         for (int block_count = default; block_count < _now_Mino_Position.GetLength(Variables._zero); block_count++)
         {
-            _stage[_now_Mino_Position[block_count, Variables._zero], _now_Mino_Position[block_count, Variables._one]] = Variables._air;
-            _stage[_now_Mino_Position[block_count, Variables._zero], _now_Mino_Position[block_count, Variables._one] + Variables._one] = Variables._now_Mino;
-            _now_Mino_Position[block_count, Variables._one] = _now_Mino_Position[block_count, Variables._one] + Variables._one;
+            if (_now_Mino_Position[block_count, Variables._zero] + (int)Input.y >= Variables._zero || _now_Mino_Position[block_count, Variables._one] + (int)Input.x >= Variables._zero || _now_Mino_Position[block_count, Variables._one] + (int)Input.x < _stage.GetLength(Variables._one))
+            {
+                _can_Move = false;
+            }
+        }
+
+        for (int block_count = default; block_count < _now_Mino_Position.GetLength(Variables._zero); block_count++)
+        {
+            if (_can_Move)
+            {
+                _stage[_now_Mino_Position[block_count, Variables._zero], _now_Mino_Position[block_count, Variables._one]] = Variables._air;
+                _stage[_now_Mino_Position[block_count, Variables._zero] + (int)Input.y, _now_Mino_Position[block_count, Variables._one] + (int)Input.x] = Variables._now_Mino;
+                _now_Mino_Position[block_count, Variables._zero] = _now_Mino_Position[block_count, Variables._one] + (int)Input.y;
+                _now_Mino_Position[block_count, Variables._one] = _now_Mino_Position[block_count, Variables._one] + Variables._one;
+            }
+            else
+            {
+                return;
+            }
         }
     }
 
@@ -357,6 +326,9 @@ public class Map : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// minoの削除
+    /// </summary>
     protected void Delete()
     {
         for (int y = default; y < _stage.GetLength(Variables._zero); y++)
